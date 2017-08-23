@@ -1,2 +1,2 @@
 # dbox-scatter
-Scatter Layer for dbox.js
+A scatter layer for dbox.
