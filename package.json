@@ -1,6 +1,6 @@
 {
   "name": "@dboxjs/dbox-scatter",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A scatter layer for dbox",
   "main": "src/index.js",
   "scripts": {
