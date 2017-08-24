@@ -1,6 +1,6 @@
 {
-  "name": "dbox-scatter",
-  "version": "1.0.0",
+  "name": "@dboxjs/dbox-scatter",
+  "version": "0.0.1",
   "description": "A scatter layer for dbox",
   "main": "index.js",
   "scripts": {
@@ -48,5 +48,8 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-uglify": "^2.0.1",
     "rollup-watch": "^4.3.1"
+  },
+  "directories": {
+    "test": "test"
   }
 }
