@@ -7,7 +7,7 @@ import istanbul from 'rollup-plugin-istanbul';
 import uglify from 'rollup-plugin-uglify';
 
 export default {
-  entry: 'src/index.js',
+  entry: 'scatter.js',
   format: 'cjs',
   moduleName: 'dbox-scatter',
   plugins: [
