@@ -1,8 +1,8 @@
 {
-  "name": "@dboxjs/dbox-scatter",
+  "name": "@dboxjs/scatter",
   "version": "0.0.2",
   "description": "A scatter layer for dbox",
-  "main": "src/index.js",
+  "main": "scatter.js",
   "scripts": {
     "test": "node node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=test ./node_modules/.bin/nyc ./node_modules/.bin/mocha --opts .mocharc",
     "build": "rollup -c",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dboxjs/dbox-scatter.git"
+    "url": "git+https://github.com/dboxjs/scatter.git"
   },
   "keywords": [
     "d3",
@@ -22,9 +22,9 @@
   "author": "Jorge Andrade",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dboxjs/dbox-scatter/issues"
+    "url": "https://github.com/dboxjs/scatter/issues"
   },
-  "homepage": "https://github.com/dboxjs/dbox-scatter#readme",
+  "homepage": "https://github.com/dboxjs/scatter#readme",
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
