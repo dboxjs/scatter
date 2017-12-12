@@ -15,6 +15,13 @@ export default function(config) {
 
   //-------------------------------
   //User config functions
+  Scatter.prototype.id = function(col) {
+    var vm = this;
+    vm._config.id = col;
+    return vm;
+  }
+
+
   Scatter.prototype.x = function(col) {
     var vm = this;
     vm._config.x = col;
@@ -186,7 +193,10 @@ export default function(config) {
       .enter().append("circle")
       .attr("class", "dot")
       .attr("class",function(d,i){
-        return d.properties !== undefined &&  d.properties.id !== undefined ? "scatter-"+d.properties.id : "scatter-"+i;
+        var id = d.properties !== undefined &&  d.properties.id !== undefined ? d.properties.id: false;
+        id = vm._config.id ? d.datum[vm._config.id] : false
+        return id ? "scatter-"+id : "scatter-"+i;
+        
       })
       .attr("r", function(d){
         return vm._scales.radius(d.radius);
