@@ -66,19 +66,6 @@ export default function(config, helper) {
     return vm;
   }
 
-  Scatter.end = function() {
-    var vm = this;
-    return vm._chart;
-  }
-
-  //-------------------------------
-  //Triggered by chart.js;
-  Scatter.chart = function(chart) {
-    var vm = this;
-    vm._chart = chart;
-    return vm;
-  }
-
   Scatter.data = function(data) {
     var vm = this;
     vm._data = [];
@@ -178,7 +165,6 @@ export default function(config, helper) {
 
   Scatter.draw = function() {
     var vm = this;
-    
     //Call the tip
     vm.chart.svg().call(vm._tip)
     
