@@ -180,9 +180,9 @@ export default function(config, helper) {
     var vm = this;
     
     //Call the tip
-    vm._chart._svg.call(vm._tip)
+    vm.chart.svg().call(vm._tip)
     
-    var circles = vm._chart._svg.selectAll(".dot")
+    var circles = vm.chart.svg().selectAll(".dot")
       .data(vm._data)
       //.data(vm._data, function(d){ return d.key})
       .enter().append("circle")
@@ -232,12 +232,12 @@ export default function(config, helper) {
 
   Scatter.select = function(id){
     var vm = this; 
-    return vm._chart._svg.select("circle.scatter-"+id);
+    return vm.chart.svg().select("circle.scatter-"+id);
   }
 
   Scatter.selectAll = function(id){
     var vm = this; 
-    return vm._chart._svg.selectAll("circle");
+    return vm.chart.svg().selectAll("circle");
   }
 
   Scatter.init(config);
