@@ -2,9 +2,11 @@
  * Simple Scatter chart
  */
 
-export default function(config) {
+export default function(config, helper) {
+
+  var Scatter = Object.create(helper);
   
-  function Scatter(config) {
+  Scatter.init = function(config) {
     var vm = this;
     vm._config = config ? config : {};
     vm._data = [];
@@ -15,69 +17,69 @@ export default function(config) {
 
   //-------------------------------
   //User config functions
-  Scatter.prototype.x = function(col) {
+  Scatter.x = function(col) {
     var vm = this;
     vm._config.x = col;
     return vm;
   }
 
-  Scatter.prototype.y = function(col) {
+  Scatter.y = function(col) {
     var vm = this;
     vm._config.y = col;
     return vm;
   }
 
-  Scatter.prototype.radius = function(radius) {
+  Scatter.radius = function(radius) {
     var vm = this;
     vm._config.radius = radius;
     return vm;
   }
 
-  Scatter.prototype.radiusRange = function(radiusRange) {
+  Scatter.radiusRange = function(radiusRange) {
     var vm = this;
     vm._config.radiusRange = radiusRange;
     return vm;
   }
 
-  Scatter.prototype.properties = function(properties){
+  Scatter.properties = function(properties){
     var vm = this;
     vm._config.properties = properties;
     return vm;
   }
 
-  Scatter.prototype.color = function(col) {
+  Scatter.color = function(col) {
     var vm = this;
     vm._config.color = col;
     return vm;
   }
 
-  Scatter.prototype.opacity = function(opacity) {
+  Scatter.opacity = function(opacity) {
     var vm = this;
     vm._config.opacity = opacity;
     return vm;
   }
 
-  Scatter.prototype.tip = function(tip){
+  Scatter.tip = function(tip){
     var vm = this;
     vm._config.tip = tip;
     vm._tip.html(vm._config.tip);
     return vm;
   }
 
-  Scatter.prototype.end = function() {
+  Scatter.end = function() {
     var vm = this;
     return vm._chart;
   }
 
   //-------------------------------
   //Triggered by chart.js;
-  Scatter.prototype.chart = function(chart) {
+  Scatter.chart = function(chart) {
     var vm = this;
     vm._chart = chart;
     return vm;
   }
 
-  Scatter.prototype.data = function(data) {
+  Scatter.data = function(data) {
     var vm = this;
     vm._data = [];
     data.forEach(function(d, i) {
@@ -98,19 +100,19 @@ export default function(config) {
     return vm;
   }
 
-  Scatter.prototype.scales = function(s) {
+  Scatter.scales = function(s) {
     var vm = this;
     vm._scales = s;
     return vm;
   }
 
-  Scatter.prototype.axes = function(a) {
+  Scatter.axes = function(a) {
     var vm = this;
     vm._axes = a;
     return vm;
   }
 
-  Scatter.prototype.domains = function() {
+  Scatter.domains = function() {
     var vm = this;
     var xMinMax = d3.extent(vm._data, function(d) {
         return d.x;
@@ -174,7 +176,7 @@ export default function(config) {
     return vm;
   };
 
-  Scatter.prototype.draw = function() {
+  Scatter.draw = function() {
     var vm = this;
     
     //Call the tip
@@ -228,15 +230,16 @@ export default function(config) {
     return vm;
   }
 
-  Scatter.prototype.select = function(id){
+  Scatter.select = function(id){
     var vm = this; 
     return vm._chart._svg.select("circle.scatter-"+id);
   }
 
-  Scatter.prototype.selectAll = function(id){
+  Scatter.selectAll = function(id){
     var vm = this; 
     return vm._chart._svg.selectAll("circle");
   }
 
-  return new Scatter(config);
+  Scatter.init(config);
+  return Scatter;
 }
