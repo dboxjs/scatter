@@ -47,9 +47,9 @@ export default function(config, helper) {
     return vm;
   }
 
-  Scatter.color = function(col) {
+  Scatter.fill = function(col) {
     var vm = this;
-    vm._config.color = col;
+    vm._config.fill = col;
     return vm;
   }
 
@@ -87,7 +87,7 @@ export default function(config, helper) {
       m.datum = d;
       m.x = vm._config.xAxis.scale == 'linear' ? +d[vm._config.x] : d[vm._config.x];
       m.y = vm._config.yAxis.scale == 'linear'? +d[vm._config.y] : d[vm._config.y];
-      m.color = vm._config.color.slice(0,1) !== '#' ? d[vm._config.color] : vm._config.color;
+      m.color = vm._config.fill.slice(0,1) !== '#' ? d[vm._config.fill] : vm._config.fill;
       m.radius = vm._config.radius !== undefined ? isNaN(vm._config.radius) ? +d[vm._config.radius] : vm._config.radius : 5;
       
       if(vm._config.properties !== undefined && Array.isArray(vm._config.properties) && vm._config.properties.length > 0){
