@@ -87,14 +87,14 @@ export default function(config, helper) {
     return vm;
   }
 
-  Scatter.domains = function() {
+  Scatter.scales = function() {
     var vm = this;
     var xMinMax = d3.extent(vm._data, function(d) {
         return d.x;
       }),
       yMinMax = d3.extent(vm._data, function(d) {
         return d.y;
-      }), 
+      }),
       radiusMinMax = d3.extent(vm._data, function(d) {
         return d.radius;
       }); 
