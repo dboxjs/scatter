@@ -90,6 +90,8 @@ export default function(config, helper) {
   Scatter.scales = function() {
     var vm = this;
 
+    vm._scales.color = d3.scaleOrdinal(d3.schemeCategory10);
+
     var radiusMinMax = d3.extent(vm._data, function(d) {
         return d.radius;
       }); 
