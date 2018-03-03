@@ -89,57 +89,16 @@ export default function(config, helper) {
 
   Scatter.scales = function() {
     var vm = this;
-    var xMinMax = d3.extent(vm._data, function(d) {
-        return d.x;
-      }),
-      yMinMax = d3.extent(vm._data, function(d) {
-        return d.y;
-      }),
-      radiusMinMax = d3.extent(vm._data, function(d) {
+
+    var radiusMinMax = d3.extent(vm._data, function(d) {
         return d.radius;
       }); 
 
     var arrOk = [0, 0];
 
-    if (vm._config.fixTo45) {
-      if (xMinMax[1] > yMinMax[1]) {
-        arrOk[1] = xMinMax[1];
-      } else {
-        arrOk[1] = yMinMax[1];
-      }
-
-      if (xMinMax[0] < yMinMax[0]) {
-        //yMinMax = xMinMax;
-        arrOk[0] = xMinMax[0];
-      } else {
-        arrOk[0] = yMinMax[0];
-      }
-
-      vm._scales.x.domain(arrOk).nice();
-      vm._scales.y.domain(arrOk).nice();
       vm._scales.radius = d3.scaleLinear()
                           .range(vm._config.radiusRange != undefined ? vm._config.radiusRange : [5, 15])
                           .domain(radiusMinMax).nice(); 
-
-    } else {
-      vm._scales.x.domain(xMinMax); //.nice();
-      vm._scales.y.domain(yMinMax); //.nice();
-      if(vm._scales.x.nice) {
-        vm._scales.x.nice();
-      }
-      if(vm._scales.y.nice) {
-        vm._scales.y.nice();
-      }
-      vm._scales.radius = d3.scaleLinear()
-                          .range(vm._config.radiusRange != undefined ? vm._config.radiusRange : [5, 15])
-                          .domain(radiusMinMax).nice(); 
-      if(vm._config.xAxis && vm._config.xAxis.scale !== 'linear') {
-        vm._scales.x.domain(vm._data.map(function(m){ return m.x; }));
-      }
-      if(vm._config.yAxis && vm._config.yAxis.scale !== 'linear') {
-        vm._scales.y.domain(vm._data.map(function(m){ return m.y}));
-      }
-    }
 
     if(vm._config.xAxis.scaleDomain && Array.isArray(vm._config.xAxis.scaleDomain)) {
       vm._scales.x.domain(vm._config.xAxis.scaleDomain);
