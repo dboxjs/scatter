@@ -90,6 +90,24 @@ export default function(config, helper) {
   Scatter.scales = function() {
     var vm = this;
 
+    if(vm._config.hasOwnProperty('x')  && vm._config.hasOwnProperty('y') ){
+      config = {
+        column: vm._config.x,
+        type: vm._config.xAxis.scale,
+        range: [0, vm.chart.width],
+        minZero: vm._config.xAxis.minZero
+      };
+      vm._scales.x = vm.utils.generateScale(vm._data, config);
+
+      config = {
+        column: vm._config.y,
+        type: vm._config.yAxis.scale,
+        range: [vm.chart.height, 0],
+        minZero: vm._config.xAxis.minZero
+      };
+      vm._scales.y = vm.utils.generateScale(vm._data, config);
+    }
+
     vm._scales.color = d3.scaleOrdinal(d3.schemeCategory10);
 
     var radiusMinMax = d3.extent(vm._data, function(d) {
