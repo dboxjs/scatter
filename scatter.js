@@ -17,13 +17,13 @@ export default function(config, helper) {
 
   //-------------------------------
   //User config functions
-  Scatter.prototype.id = function(col) {
+  Scatter.id = function(col) {
     var vm = this;
     vm._config.id = col;
     return vm;
   }
 
-  Scatter.prototype.x = function(col) {
+  Scatter.x = function(col) {
     var vm = this;
     vm._config.x = col;
     return vm;
