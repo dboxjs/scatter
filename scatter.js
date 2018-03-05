@@ -75,6 +75,7 @@ export default function(config, helper) {
   Scatter.data = function(data) {
     var vm = this;
     vm._data = [];
+
     data.forEach(function(d, i) {
       var m = {};
       m.datum = d;
@@ -98,18 +99,21 @@ export default function(config, helper) {
 
     if(vm._config.hasOwnProperty('x')  && vm._config.hasOwnProperty('y') ){
       config = {
-        column: vm._config.x,
+        column: 'x',
         type: vm._config.xAxis.scale,
         range: [0, vm.chart.width],
-        minZero: vm._config.xAxis.minZero
+        minZero: false
       };
       vm._scales.x = vm.utils.generateScale(vm._data, config);
 
+
+      console.log( vm._data, config, vm._scales.x.domain(), vm._scales.x.range())
+
       config = {
-        column: vm._config.y,
+        column: 'y',
         type: vm._config.yAxis.scale,
         range: [vm.chart.height, 0],
-        minZero: vm._config.xAxis.minZero
+        minZero: false
       };
       vm._scales.y = vm.utils.generateScale(vm._data, config);
     }
@@ -156,16 +160,26 @@ export default function(config, helper) {
         return vm._scales.radius(d.radius);
       })
       .attr("cx", function(d) {
-        if(vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band')
-          return vm._scales.x(d.x) + (Math.random() * (vm._scales.x.bandwidth() - (d.size * 2)));
+       if(vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band')
+          return vm._scales.x(d.x) + vm._scales.x.bandwidth()/2;
         else 
           return vm._scales.x(d.x);
+
+       /*  if(vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band')
+          return vm._scales.x(d.x) + (Math.random() * (vm._scales.x.bandwidth() - (d.size * 2)));
+        else 
+          return vm._scales.x(d.x); */
       })
       .attr("cy", function(d) {
         if(vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band')
-          return vm._scales.y(d.y) + (Math.random() * (vm._scales.y.bandwidth() - (d.size * 2)));
+          return vm._scales.y(d.y) + vm._scales.y.bandwidth()/2;
         else 
           return vm._scales.y(d.y);
+          
+        /* if(vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band')
+          return vm._scales.y(d.y) + (Math.random() * (vm._scales.y.bandwidth() - (d.size * 2)));
+        else 
+          return vm._scales.y(d.y); */
       })
       .style("fill", function(d) {
         return d.color.slice(0,1) !== '#' ?  vm._scales.color(d.color) : d.color;
