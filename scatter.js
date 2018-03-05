@@ -15,6 +15,12 @@ export default function(config) {
 
   //-------------------------------
   //User config functions
+  Scatter.prototype.id = function(col) {
+    var vm = this;
+    vm._config.id = col;
+    return vm;
+  }
+
   Scatter.prototype.x = function(col) {
     var vm = this;
     vm._config.x = col;
@@ -186,7 +192,10 @@ export default function(config) {
       .enter().append("circle")
       .attr("class", "dot")
       .attr("class",function(d,i){
-        return d.properties !== undefined &&  d.properties.id !== undefined ? "scatter-"+d.properties.id : "scatter-"+i;
+        //Backward compability with d.properties
+        var id = (d.properties !== undefined &&  d.properties.id !== undefined)  ? d.properties.id : false;
+        id = vm._config.id ? vm._config.id : false; 
+        return  id ? "scatter-"+d.datum[id] : "scatter-"+i;
       })
       .attr("r", function(d){
         return vm._scales.radius(d.radius);
@@ -217,7 +226,7 @@ export default function(config) {
         if (vm._config.mouseout) {
           vm._config.mouseout.call(this, d, i);
         }
-        vm._tip.hide(d, d3.select(this).node());
+        //vm._tip.hide(d, d3.select(this).node());
       })
       .on("click", function(d, i) {
         if (vm._config.onclick) {
