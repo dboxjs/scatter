@@ -126,7 +126,7 @@ export default function (config, helper) {
       
       m.magnitude = vm._config.magnitude !== undefined ? isNaN(vm._config.magnitude) ? +d[vm._config.magnitude] : vm._config.magnitude : 5;
 
-      if (vm._config.properties !== undefined && Array.isArray(vm._config.properties) && vm._config.properties.magnitude > 0) {
+      if (vm._config.properties !== undefined && Array.isArray(vm._config.properties) && vm._config.properties.length > 0) {
         vm._config.properties.forEach(function (p) {
           m[p] = d[p];
         });
