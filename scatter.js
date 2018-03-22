@@ -20,8 +20,6 @@ export default function (config, helper) {
         var html ='';
         html += d.x ? ('<span>' + (Number.isNaN(+d.x) ? d.x : formatter(d.x)) + '</span></br>') : '';
         html += d.y ? ('<span>' + (Number.isNaN(+d.y) ? d.y : formatter(d.y)) + '</span></br>') : '';
-        html += d.color ? ('<span>' + (Number.isNaN(+d.color) ? d.color : formatter(d.color)) + '</span></br>') : '';
-        html += d.radius ? ('<span>' + formatter(d.radius) + '</span>') : '';
         return html;
       });
   };
@@ -53,15 +51,21 @@ export default function (config, helper) {
     return vm;
   };
 
-  Scatter.size = function (radius) {
+  Scatter.magnitude = function (magnitude) {
     var vm = this;
-    vm._config.radius = radius;
+    vm._config.magnitude = magnitude;
     return vm;
   };
 
   Scatter.radiusRange = function (radiusRange) {
     var vm = this;
     vm._config.radiusRange = radiusRange;
+    return vm;
+  };
+
+  Scatter.magnitudeRange = function (magnitudeRange) {
+    var vm = this;
+    vm._config.magnitudeRange = magnitudeRange;
     return vm;
   };
 
@@ -119,6 +123,8 @@ export default function (config, helper) {
       m.y = vm._config.yAxis.scale == 'linear' ? +d[vm._config.y] : d[vm._config.y];
       m.color = vm._config.fill.slice(0, 1) !== '#' ? d[vm._config.fill] : vm._config.fill;
       m.radius = vm._config.radius !== undefined ? isNaN(vm._config.radius) ? +d[vm._config.radius] : vm._config.radius : 5;
+      
+      m.magnitude = vm._config.magnitude !== undefined ? isNaN(vm._config.magnitude) ? +d[vm._config.magnitude] : vm._config.magnitude : 5;
 
       if (vm._config.properties !== undefined && Array.isArray(vm._config.properties) && vm._config.properties.length > 0) {
         vm._config.properties.forEach(function (p) {
@@ -163,11 +169,19 @@ export default function (config, helper) {
       return d.radius;
     });
 
+    var magnitudeMinMax = d3.extent(vm._data, function (d) {
+      return d.magnitude;
+    });
+
     var arrOk = [0, 0];
 
     vm._scales.radius = d3.scaleLinear()
       .range(vm._config.radiusRange != undefined ? vm._config.radiusRange : [5, 15])
       .domain(radiusMinMax).nice();
+
+    vm._scales.magnitude = d3.scaleLinear()
+      .range(vm._config.magnitudeRange != undefined ? vm._config.magnitudeRange : [5, 20])
+      .domain(magnitudeMinMax).nice();
 
     if (vm._config.xAxis.scaleDomain && Array.isArray(vm._config.xAxis.scaleDomain)) {
       vm._scales.x.domain(vm._config.xAxis.scaleDomain);
@@ -187,64 +201,120 @@ export default function (config, helper) {
     console.log(vm._config.figureType); 
     /** @todo check if figureType is 'circle' or 'square'*/
 
-    var circles = vm.chart.svg().selectAll('.dot')
-      .data(vm._data)
-      //.data(vm._data, function(d){ return d.key})
-      .enter().append('circle')
-      .attr('class', 'dot')
-      .attr('class', function (d, i) {
-        //Backward compability with d.properties
-        var id = (d.properties !== undefined && d.properties.id !== undefined) ? d.properties.id : false;
-        id = vm._config.id ? vm._config.id : false;
-        return id ? 'scatter-' + d.datum[id] : 'scatter-' + i;
-      })
-      .attr('r', function (d) {
-        return vm._scales.radius(d.radius);
-      })
-      .attr('cx', function (d) {
-        if (vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band')
-          return vm._scales.x(d.x) + vm._scales.x.bandwidth() / 2;
-        else
-          return vm._scales.x(d.x);
+    if ( vm._config.figureType === 'square' ) {
+      var squares = vm.chart.svg().selectAll('square')
+        .data(vm._data)
+        .enter().append('rect')
+        .attr('class', 'square')
+        .attr('class', function (d, i) {
+          //Backward compability with d.properties
+          var id = (d.properties !== undefined && d.properties.id !== undefined) ? d.properties.id : false;
+          id = vm._config.id ? vm._config.id : false;
+          return id ? 'scatter-' + d.datum[id] : 'scatter-' + i;
+        })
+        .attr('width', function (d) {
+          return vm._scales.magnitude(d.magnitude);
+        })
+        .attr('height', function (d) {
+          return vm._scales.magnitude(d.magnitude);
+        })
+        .attr('x', function (d) {
+          if (vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band') {
+            return vm._scales.x(d.x) + vm._scales.x.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
+          }
+          else {
+            return vm._scales.x(d.x);
+          }
+        })
+        .attr('y', function (d) {
+          if (vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band') {
+            return vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
+          }
+          else {
+            return vm._scales.y(d.y);
+          }
+        })
+        .style('fill', function (d) {
+          return d.color.slice(0, 1) !== '#' ? vm._scales.color(d.color) : d.color;
+        })
+        .style('opacity', vm._config.opacity !== undefined ? vm._config.opacity : 1)
+        .on('mouseover', function (d, i) {
+          if (vm._config.mouseover) {
+            vm._config.mouseover.call(vm, d, i);
+          }
+          vm._tip.show(d, d3.select(this).node());
+        })
+        .on('mouseout', function (d, i) {
+          if (vm._config.mouseout) {
+            vm._config.mouseout.call(this, d, i);
+          }
+          vm._tip.hide(d, d3.select(this).node());
+        })
+        .on('click', function (d, i) {
+          if (vm._config.onclick) {
+            vm._config.onclick.call(this, d, i);
+          }
+        });
+    }
+    else {
+      var circles = vm.chart.svg().selectAll('.dot')
+        .data(vm._data)
+        //.data(vm._data, function(d){ return d.key})
+        .enter().append('circle')
+        .attr('class', 'dot')
+        .attr('class', function (d, i) {
+          //Backward compability with d.properties
+          var id = (d.properties !== undefined && d.properties.id !== undefined) ? d.properties.id : false;
+          id = vm._config.id ? vm._config.id : false;
+          return id ? 'scatter-' + d.datum[id] : 'scatter-' + i;
+        })
+        .attr('r', function (d) {
+          return vm._scales.radius(d.radius);
+        })
+        .attr('cx', function (d) {
+          if (vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band')
+            return vm._scales.x(d.x) + vm._scales.x.bandwidth() / 2;
+          else
+            return vm._scales.x(d.x);
 
-        /*  if(vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band')
-           return vm._scales.x(d.x) + (Math.random() * (vm._scales.x.bandwidth() - (d.size * 2)));
-         else 
-           return vm._scales.x(d.x); */
-      })
-      .attr('cy', function (d) {
-        if (vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band')
-          return vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2;
-        else
-          return vm._scales.y(d.y);
+          /*  if(vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band')
+            return vm._scales.x(d.x) + (Math.random() * (vm._scales.x.bandwidth() - (d.size * 2)));
+          else 
+            return vm._scales.x(d.x); */
+        })
+        .attr('cy', function (d) {
+          if (vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band')
+            return vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2;
+          else
+            return vm._scales.y(d.y);
 
-        /* if(vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band')
-          return vm._scales.y(d.y) + (Math.random() * (vm._scales.y.bandwidth() - (d.size * 2)));
-        else 
-          return vm._scales.y(d.y); */
-      })
-      .style('fill', function (d) {
-        return d.color.slice(0, 1) !== '#' ? vm._scales.color(d.color) : d.color;
-      })
-      .style('opacity', vm._config.opacity !== undefined ? vm._config.opacity : 1)
-      .on('mouseover', function (d, i) {
-        if (vm._config.mouseover) {
-          vm._config.mouseover.call(vm, d, i);
-        }
-        vm._tip.show(d, d3.select(this).node());
-      })
-      .on('mouseout', function (d, i) {
-        if (vm._config.mouseout) {
-          vm._config.mouseout.call(this, d, i);
-        }
-        vm._tip.hide(d, d3.select(this).node());
-      })
-      .on('click', function (d, i) {
-        if (vm._config.onclick) {
-          vm._config.onclick.call(this, d, i);
-        }
-      });
-
+          /* if(vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band')
+            return vm._scales.y(d.y) + (Math.random() * (vm._scales.y.bandwidth() - (d.size * 2)));
+          else 
+            return vm._scales.y(d.y); */
+        })
+        .style('fill', function (d) {
+          return d.color.slice(0, 1) !== '#' ? vm._scales.color(d.color) : d.color;
+        })
+        .style('opacity', vm._config.opacity !== undefined ? vm._config.opacity : 1)
+        .on('mouseover', function (d, i) {
+          if (vm._config.mouseover) {
+            vm._config.mouseover.call(vm, d, i);
+          }
+          vm._tip.show(d, d3.select(this).node());
+        })
+        .on('mouseout', function (d, i) {
+          if (vm._config.mouseout) {
+            vm._config.mouseout.call(this, d, i);
+          }
+          vm._tip.hide(d, d3.select(this).node());
+        })
+        .on('click', function (d, i) {
+          if (vm._config.onclick) {
+            vm._config.onclick.call(this, d, i);
+          }
+        });
+      }
     return vm;
   };
 
