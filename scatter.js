@@ -213,7 +213,6 @@ export default function (config, helper) {
           return id ? 'scatter-' + d.datum[id] : 'scatter-' + i;
         })
         .attr('width', function (d) {
-          console.log(d, 'd');
           return vm._scales.magnitude(d.magnitude);
         })
         .attr('height', function (d) {
