@@ -20,6 +20,8 @@ export default function (config, helper) {
         var html ='';
         html += d.x ? ('<span>' + (Number.isNaN(+d.x) ? d.x : formatter(d.x)) + '</span></br>') : '';
         html += d.y ? ('<span>' + (Number.isNaN(+d.y) ? d.y : formatter(d.y)) + '</span></br>') : '';
+        html += d.magnitude ? ('<span>' + (Number.isNaN(+d.magnitude) ? d.magnitude : formatter(d.magnitude)) + '</span></br>') : '';
+        html += d.color ? ('<span>' + (Number.isNaN(+d.color) ? d.color : formatter(d.color)) + '</span>') : '';
         return html;
       });
   };
