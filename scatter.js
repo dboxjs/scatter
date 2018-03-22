@@ -6,13 +6,24 @@ export default function (config, helper) {
 
   var Scatter = Object.create(helper);
 
+  var formatter = d3.format(',.1f');
+
   Scatter.init = function (config) {
     var vm = this;
     vm._config = config ? config : {};
     vm._data = [];
     vm._scales = {};
     vm._axes = {};
-    vm._tip = d3.tip().attr('class', 'd3-tip');
+    vm._tip = d3.tip().attr('class', 'd3-tip')
+      .html(vm._config.tip ? vm._config.tip : function(d) {
+        console.log(d);
+        var html ='';
+        html += d.x ? ('<span>' + (Number.isNaN(+d.x) ? d.x : formatter(d.x)) + '</span></br>') : '';
+        html += d.y ? ('<span>' + (Number.isNaN(+d.y) ? d.y : formatter(d.y)) + '</span></br>') : '';
+        html += d.color ? ('<span>' + (Number.isNaN(+d.color) ? d.color : formatter(d.color)) + '</span></br>') : '';
+        html += d.radius ? ('<span>' + formatter(d.radius) + '</span>') : '';
+        return html;
+      });
   };
 
   //-------------------------------
@@ -42,6 +53,12 @@ export default function (config, helper) {
     return vm;
   };
 
+  Scatter.size = function (radius) {
+    var vm = this;
+    vm._config.radius = radius;
+    return vm;
+  };
+
   Scatter.radiusRange = function (radiusRange) {
     var vm = this;
     vm._config.radiusRange = radiusRange;
@@ -51,6 +68,24 @@ export default function (config, helper) {
   Scatter.properties = function (properties) {
     var vm = this;
     vm._config.properties = properties;
+    return vm;
+  };
+
+  Scatter.figure = function (figureType) {
+    var vm = this;
+    vm._config.figureType = figureType;
+    return vm;
+  };
+
+  Scatter.colors = function(colors) {
+    var vm = this;
+    if (Array.isArray(colors)) {
+      //Using an array of colors for the range 
+      vm._config.colors = colors;
+    } else {
+      //Using a preconfigured d3.scale
+      vm._scales.color = colors;
+    }
     return vm;
   };
 
@@ -119,7 +154,10 @@ export default function (config, helper) {
       vm._scales.y = vm.utils.generateScale(vm._data, config);
     }
 
-    vm._scales.color = d3.scaleOrdinal(d3.schemeCategory10);
+    if (vm._config.hasOwnProperty('colors'))
+      vm._scales.color = d3.scaleOrdinal(vm._config.colors);
+    else
+      vm._scales.color = d3.scaleOrdinal(d3.schemeCategory20c);
 
     var radiusMinMax = d3.extent(vm._data, function (d) {
       return d.radius;
@@ -145,6 +183,9 @@ export default function (config, helper) {
     var vm = this;
     //Call the tip
     vm.chart.svg().call(vm._tip);
+
+    console.log(vm._config.figureType); 
+    /** @todo check if figureType is 'circle' or 'square'*/
 
     var circles = vm.chart.svg().selectAll('.dot')
       .data(vm._data)
@@ -196,7 +237,7 @@ export default function (config, helper) {
         if (vm._config.mouseout) {
           vm._config.mouseout.call(this, d, i);
         }
-        //vm._tip.hide(d, d3.select(this).node());
+        vm._tip.hide(d, d3.select(this).node());
       })
       .on('click', function (d, i) {
         if (vm._config.onclick) {
