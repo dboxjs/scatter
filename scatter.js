@@ -20,8 +20,8 @@ export default function (config, helper) {
         var html ='';
         html += d.x ? ('<span>' + (Number.isNaN(+d.x) ? d.x : formatter(d.x)) + '</span></br>') : '';
         html += d.y ? ('<span>' + (Number.isNaN(+d.y) ? d.y : formatter(d.y)) + '</span></br>') : '';
-        html += d.color ? ('<span>' + (Number.isNaN(+d.color) ? d.color : formatter(d.color)) + '</span></br>') : '';
-        html += d.radius ? ('<span>' + formatter(d.radius) + '</span>') : '';
+        //html += d.color ? ('<span>' + (Number.isNaN(+d.color) ? d.color : formatter(d.color)) + '</span></br>') : '';
+        //html += d.radius ? ('<span>' + formatter(d.radius) + '</span>') : '';
         return html;
       });
   };
@@ -216,8 +216,6 @@ export default function (config, helper) {
         })
         .attr('width', function (d) {
           console.log(d, 'd');
-          console.log( vm._scales.magnitude, 'scales');
-          console.log(d.magnitude, 'd magnitude');
           return vm._scales.magnitude(d.magnitude);
         })
         .attr('height', function (d) {
@@ -225,7 +223,7 @@ export default function (config, helper) {
         })
         .attr('x', function (d) {
           if (vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band') {
-            return vm._scales.x(d.x) + vm._scales.x.bandwidth() / 2;
+            return vm._scales.x(d.x) + vm._scales.x.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
           }
           else {
             return vm._scales.x(d.x);
@@ -233,7 +231,7 @@ export default function (config, helper) {
         })
         .attr('y', function (d) {
           if (vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band') {
-            return vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2;
+            return vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
           }
           else {
             return vm._scales.y(d.y);
