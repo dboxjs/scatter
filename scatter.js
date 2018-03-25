@@ -237,7 +237,7 @@ export default function (config, helper) {
           }
         })
         .style('fill', function (d) {
-          return d.color.slice(0, 1) !== '#' ? vm._scales.color(d.color) : d.color;
+          return String(d.color).slice(0, 1) !== '#' ? vm._scales.color(d.color) : d.color;
         })
         .style('opacity', vm._config.opacity !== undefined ? vm._config.opacity : 1)
         .on('mouseover', function (d, i) {
@@ -296,7 +296,7 @@ export default function (config, helper) {
             return vm._scales.y(d.y); */
         })
         .style('fill', function (d) {
-          return d.color.slice(0, 1) !== '#' ? vm._scales.color(d.color) : d.color;
+          return String(d.color).slice(0, 1) !== '#' ? vm._scales.color(d.color) : d.color;
         })
         .style('opacity', vm._config.opacity !== undefined ? vm._config.opacity : 1)
         .on('mouseover', function (d, i) {
