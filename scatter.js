@@ -200,9 +200,6 @@ export default function (config, helper) {
     //Call the tip
     vm.chart.svg().call(vm._tip);
 
-    console.log(vm._config.figureType); 
-    /** @todo check if figureType is 'circle' or 'square'*/
-
     if ( vm._config.figureType === 'square' ) {
       var squares = vm.chart.svg().selectAll('square')
         .data(vm._data)
