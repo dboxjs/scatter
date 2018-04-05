@@ -313,7 +313,7 @@ export default function (config, helper) {
             vm._config.onclick.call(this, d, i);
           }
         });
-      }
+    }
     return vm;
   };
 
