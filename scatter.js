@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 /*
  * Simple Scatter chart
  */
@@ -12,7 +13,8 @@ export default function (config, helper) {
     vm._data = [];
     vm._scales = {};
     vm._axes = {};
-    vm._tip = d3.tip().attr('class', 'd3-tip')
+    
+    vm._tip = this.utils.d3.tip().attr('class', 'd3-tip')
       .html(vm._config.tip ? vm._config.tip : function(d) {
         var html ='';
         html += d.x ? ('<span>' + (Number.isNaN(+d.x) ? d.x : vm.utils.format(d.x)) + '</span></br>') : '';
