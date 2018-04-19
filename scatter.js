@@ -15,16 +15,27 @@ export default function (config, helper) {
     vm._axes = {};
     
     vm._tip = this.utils.d3.tip().attr('class', 'd3-tip')
-      .html(vm._config.tip ? vm._config.tip : function(d) {
-        var html ='';
-        html += d.x ? ('<span>' + (Number.isNaN(+d.x) ? d.x : vm.utils.format(d.x)) + '</span></br>') : '';
-        html += d.y ? ('<span>' + (Number.isNaN(+d.y) ? d.y : vm.utils.format(d.y)) + '</span></br>') : '';
+      .html(vm._config.tip && vm._config.tip.html ? vm._config.tip.html : function(d) {
+
+        var backgroundColor = vm._config.tip && vm._config.tip.backgroundColor ? vm._config.tip.backgroundColor : 'rgba(0, 0, 0, 0.8)';
+        var titleColor = vm._config.tip && vm._config.tip.titleColor ? vm._config.tip.titleColor : 'white';
+        var scaleColor = d.color ? (Number.isNaN(+d.color) ? d.color : vm.utils.format(d.color)) : 'white';
+
+        var html = `<div style='line-height: 1; font-weight: bold; background-color: ${backgroundColor}; padding: 12px; border-radius: 2px;'>`;
+        html += `<strong style='color:${titleColor}'>`;
+        html += d.x ? ('<span>(' + (Number.isNaN(+d.x) ? d.x : vm.utils.format(d.x)) + '</span>') : '';
+        html += d.y ? ('<span>, &nbsp;' + (Number.isNaN(+d.y) ? d.y : vm.utils.format(d.y)) + ')</span>') : '';
+        html += ": </strong>";
         if (d.magnitude !== d.x && d.magnitude !== d.y) {
-          html += d.magnitude ? ('<span>' + (Number.isNaN(+d.magnitude) ? d.magnitude : vm.utils.format(d.magnitude)) + '</span></br>') : '';
+          html += d.magnitude ? (`<span style='color:${scaleColor}'>` + (Number.isNaN(+d.magnitude) ? d.magnitude : vm.utils.format(d.magnitude)) + '</span>') : '';
         }
-        if (d.color !== d.x && d.color !== d.y) {
-          html += d.color ? ('<span>' + (Number.isNaN(+d.color) ? d.color : vm.utils.format(d.color)) + '</span>') : '';
-        }
+        /*if (d.color !== d.x && d.color !== d.y) {
+          html += d.color ? ('<span> ' + (Number.isNaN(+d.color) ? d.color : vm.utils.format(d.color)) + '</span>') : '';
+        }*/
+        html += "</div>";
+
+        console.log(html);
+
         return html;
       });
   };
@@ -154,7 +165,7 @@ export default function (config, helper) {
       vm._scales.x = vm.utils.generateScale(vm._data, config);
 
 
-      console.log(vm._data, config, vm._scales.x.domain(), vm._scales.x.range());
+      //console.log(vm._data, config, vm._scales.x.domain(), vm._scales.x.range());
 
       config = {
         column: 'y',
