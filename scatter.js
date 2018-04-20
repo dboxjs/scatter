@@ -138,6 +138,16 @@ export default function (config, helper) {
       }
       vm._data.push(m);
     });
+    if (vm._config.yAxis.scale !== 'linear') {
+      vm._data.sort(function(a, b) {
+        return vm.utils.sortAscending(a.y, b.y);
+      });
+    }
+    if (vm._config.xAxis.scale !== 'linear') {
+      vm._data.sort(function(a, b) {
+        return vm.utils.sortAscending(a.x, b.x);
+      });
+    }
     return vm;
   };
 
