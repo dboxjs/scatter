@@ -121,7 +121,7 @@ export default function (config, helper) {
     var vm = this;
     vm._data = [];
 
-    data.forEach(function (d, i) {
+    data.forEach(function (d) {
       var m = {};
       m.datum = d;
       m.x = vm._config.xAxis.scale == 'linear' ? +d[vm._config.x] : d[vm._config.x];
@@ -213,8 +213,9 @@ export default function (config, helper) {
     //Call the tip
     vm.chart.svg().call(vm._tip);
 
+    // Squares 
     if ( vm._config.figureType === 'square' ) {
-      var squares = vm.chart.svg().selectAll('square')
+      vm.chart.svg().selectAll('square')
         .data(vm._data)
         .enter().append('rect')
         .attr('class', 'square')
@@ -268,8 +269,9 @@ export default function (config, helper) {
           }
         });
     }
+    // Circles
     else {
-      var circles = vm.chart.svg().selectAll('.dot')
+      vm.chart.svg().selectAll('.dot')
         .data(vm._data)
         //.data(vm._data, function(d){ return d.key})
         .enter().append('circle')
