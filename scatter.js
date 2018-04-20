@@ -34,14 +34,14 @@ export default function (config, helper) {
         else { var html = "<div> <strong>" }
         html += d.x ? ('<span>(' + (Number.isNaN(+d.x) ? d.x : vm.utils.format(d.x)) + '</span>') : '';
         html += d.y ? ('<span>, &nbsp;' + (Number.isNaN(+d.y) ? d.y : vm.utils.format(d.y)) + ')</span>') : '';
-        html += " </strong>";
+        html += ' </strong>';
         if (vm._config.magnitude && d.magnitude !== d.x && d.magnitude !== d.y) {
           html += d.magnitude ? (`<span>` + (Number.isNaN(+d.magnitude) ? d.magnitude : vm.utils.format(d.magnitude)) + '</span>') : '';
         }
         /*if (d.color !== d.x && d.color !== d.y) {
           html += d.color ? ('<span> ' + (Number.isNaN(+d.color) ? d.color : vm.utils.format(d.color)) + '</span>') : '';
         }*/
-        html += "</div>";
+        html += '</div>';
 
         return html;
       });
@@ -139,7 +139,7 @@ export default function (config, helper) {
     var vm = this;
     vm._data = [];
 
-    data.forEach(function (d, i) {
+    data.forEach(function (d) {
       var m = {};
       m.datum = d;
       m.x = vm._config.xAxis.scale == 'linear' ? +d[vm._config.x] : d[vm._config.x];
@@ -156,6 +156,16 @@ export default function (config, helper) {
       }
       vm._data.push(m);
     });
+    if (vm._config.yAxis.scale !== 'linear') {
+      vm._data.sort(function(a, b) {
+        return vm.utils.sortAscending(a.y, b.y);
+      });
+    }
+    if (vm._config.xAxis.scale !== 'linear') {
+      vm._data.sort(function(a, b) {
+        return vm.utils.sortAscending(a.x, b.x);
+      });
+    }
     return vm;
   };
 
@@ -221,8 +231,9 @@ export default function (config, helper) {
     //Call the tip
     vm.chart.svg().call(vm._tip);
 
+    // Squares 
     if ( vm._config.figureType === 'square' ) {
-      var squares = vm.chart.svg().selectAll('square')
+      vm.chart.svg().selectAll('square')
         .data(vm._data)
         .enter().append('rect')
         .attr('class', 'square')
@@ -276,8 +287,9 @@ export default function (config, helper) {
           }
         });
     }
+    // Circles
     else {
-      var circles = vm.chart.svg().selectAll('.dot')
+      vm.chart.svg().selectAll('.dot')
         .data(vm._data)
         //.data(vm._data, function(d){ return d.key})
         .enter().append('circle')
