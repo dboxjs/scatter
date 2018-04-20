@@ -25,14 +25,14 @@ export default function (config, helper) {
         html += `<strong style='color:${titleColor}'>`;
         html += d.x ? ('<span>(' + (Number.isNaN(+d.x) ? d.x : vm.utils.format(d.x)) + '</span>') : '';
         html += d.y ? ('<span>, &nbsp;' + (Number.isNaN(+d.y) ? d.y : vm.utils.format(d.y)) + ')</span>') : '';
-        html += ": </strong>";
+        html += ': </strong>';
         if (d.magnitude !== d.x && d.magnitude !== d.y) {
           html += d.magnitude ? (`<span style='color:${scaleColor}'>` + (Number.isNaN(+d.magnitude) ? d.magnitude : vm.utils.format(d.magnitude)) + '</span>') : '';
         }
         /*if (d.color !== d.x && d.color !== d.y) {
           html += d.color ? ('<span> ' + (Number.isNaN(+d.color) ? d.color : vm.utils.format(d.color)) + '</span>') : '';
         }*/
-        html += "</div>";
+        html += '</div>';
 
         console.log(html);
 
