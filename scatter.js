@@ -32,9 +32,9 @@ export default function (config, helper) {
           html += `<strong style='color:${vm.chart.style.tooltip.text.fontColor};'>`;
         }
         else { var html = "<div> <strong>" }
-        html += d.x ? ('<span>(' + (Number.isNaN(+d.x) ? d.x : vm.utils.format(d.x)) + '</span>') : '';
-        html += d.y ? ('<span>, &nbsp;' + (Number.isNaN(+d.y) ? d.y : vm.utils.format(d.y)) + ')</span>') : '';
-        html += ' </strong>';
+        html += d.x ? ('<span>(' + (Number.isNaN(+d.x) || vm._config.xAxis.scale !== 'linear' ? d.x : vm.utils.format(d.x)) + '</span>') : '';
+        html += d.y ? ('<span>, &nbsp;' + (Number.isNaN(+d.y) || vm._config.yAxis.scale !== 'linear' ? d.y : vm.utils.format(d.y)) + ')</span>') : '';
+        html += ' </strong><br>';
         if (vm._config.magnitude && d.magnitude !== d.x && d.magnitude !== d.y) {
           html += d.magnitude ? (`<span>` + (Number.isNaN(+d.magnitude) ? d.magnitude : vm.utils.format(d.magnitude)) + '</span>') : '';
         }
