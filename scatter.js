@@ -16,7 +16,6 @@ export default function (config, helper) {
     
     vm._tip = this.utils.d3.tip().attr('class', 'd3-tip')
       .html(vm._config.tip && vm._config.tip.html ? vm._config.tip.html : function(d) {
-
         if (vm.chart.config.styles) {
           var html = `<div style='
             line-height: 1; 
@@ -32,6 +31,7 @@ export default function (config, helper) {
           html += `<strong style='color:${vm.chart.style.tooltip.text.fontColor};'>`;
         }
         else { var html = "<div> <strong>" }
+        html += vm._config.idName ? d.datum[vm._config.idName] ? d.datum[vm._config.idName] + '<br>' : '' : '';
         html += d.x ? ('<span>(' + (Number.isNaN(+d.x) || vm._config.xAxis.scale !== 'linear' ? d.x : vm.utils.format(d.x)) + '</span>') : '';
         html += d.y ? ('<span>, &nbsp;' + (Number.isNaN(+d.y) || vm._config.yAxis.scale !== 'linear' ? d.y : vm.utils.format(d.y)) + ')</span>') : '';
         html += ' </strong><br>';
@@ -53,6 +53,12 @@ export default function (config, helper) {
   Scatter.id = function (col) {
     var vm = this;
     vm._config.id = col;
+    return vm;
+  };
+
+  Scatter.idName = function (col) {
+    var vm = this;
+    vm._config.idName = col;
     return vm;
   };
 
@@ -182,8 +188,6 @@ export default function (config, helper) {
       vm._scales.x = vm.utils.generateScale(vm._data, config);
 
 
-      //console.log(vm._data, config, vm._scales.x.domain(), vm._scales.x.range());
-
       config = {
         column: 'y',
         type: vm._config.yAxis.scale,
@@ -282,8 +286,8 @@ export default function (config, helper) {
           vm._tip.hide(d, d3.select(this).node());
         })
         .on('click', function (d, i) {
-          if (vm._config.onclick) {
-            vm._config.onclick.call(this, d, i);
+          if (vm._config.events.onClickElement) {
+            vm._config.events.onClickElement.call(this, d, i);
           }
         });
     }
@@ -342,8 +346,8 @@ export default function (config, helper) {
           vm._tip.hide(d, d3.select(this).node());
         })
         .on('click', function (d, i) {
-          if (vm._config.onclick) {
-            vm._config.onclick.call(this, d, i);
+          if (vm._config.events.onClickElement) {
+            vm._config.events.onClickElement.call(this, d, i);
           }
         });
     }
@@ -352,7 +356,9 @@ export default function (config, helper) {
 
   Scatter.select = function (id) {
     var vm = this;
-    return vm.chart.svg().select('circle.scatter-' + id);
+    console.log('this ', id, 'is selected');
+    //vm.chart.svg().select('circle.scatter-' + id);
+    return vm;
   };
 
   Scatter.selectAll = function (id) {
