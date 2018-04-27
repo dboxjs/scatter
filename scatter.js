@@ -134,6 +134,12 @@ export default function (config, helper) {
     return vm;
   };
 
+  Scatter.regression = function (regression) {
+    var vm = this;
+    vm._config.regression = regression;
+    return vm;
+  };
+
   Scatter.tip = function (tip) {
     var vm = this;
     vm._config.tip = tip;
@@ -143,7 +149,10 @@ export default function (config, helper) {
 
   Scatter.data = function (data) {
     var vm = this;
+    var xr,yr, xMean, yMean, b1, b0;
     vm._data = [];
+
+    
 
     data.forEach(function (d) {
       var m = {};
@@ -160,8 +169,37 @@ export default function (config, helper) {
           m[p] = d[p];
         });
       }
+
       vm._data.push(m);
     });
+
+    if (vm._config.regression === true 
+      && vm._config.yAxis.scale === 'linear' 
+      && vm._config.xAxis.scale === 'linear' ) {
+      xMean = d3.mean(data.map(function(d){ return +d[vm._config.x]; }));
+      yMean = d3.mean(data.map(function(d){ return +d[vm._config.y]; }));
+      xr = 0;
+      yr = 0;
+      term1 = 0;
+      term2 = 0;
+
+      vm._data.forEach(function(m){
+        xr = m.x - xMean;
+        yr = m.y - yMean;
+        term1 += xr * yr;
+        term2 += xr * xr;
+      });
+
+      var b1 = term1 / term2;
+      var b0 = yMean - (b1 * xMean);
+
+      yhat = [];
+
+      vm._data.forEach(function(m){
+        m.yhat = b0 + (x[i] * b1);
+      })
+    }
+
     if (vm._config.yAxis.scale !== 'linear') {
       vm._data.sort(function(a, b) {
         return vm.utils.sortAscending(a.y, b.y);
@@ -171,7 +209,8 @@ export default function (config, helper) {
       vm._data.sort(function(a, b) {
         return vm.utils.sortAscending(a.x, b.x);
       });
-    }
+    }    
+    
     return vm;
   };
 
@@ -350,6 +389,21 @@ export default function (config, helper) {
             vm._config.events.onClickElement.call(this, d, i);
           }
         });
+
+      if (vm._config.regression === true){
+        var line = d3.line()
+        .x(function(d) {
+            return vm._scales.x(d.x);
+        })
+        .y(function(d) {
+            return vm._scales.y(d.yhat);
+        });
+
+        vm.chart.svg().append("path")
+          .datum(data)
+          .attr("class", "line")
+          .attr("d", line);
+      }
     }
     return vm;
   };
