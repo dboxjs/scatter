@@ -274,14 +274,14 @@ export default function (config, helper) {
         })
         .style('opacity', vm._config.opacity !== undefined ? vm._config.opacity : 1)
         .on('mouseover', function (d, i) {
-          if (vm._config.mouseover) {
-            vm._config.mouseover.call(vm, d, i);
+          if (vm._config.events.mouseover) {
+            vm._config.events.mouseover.call(vm, d, i);
           }
           vm._tip.show(d, d3.select(this).node());
         })
         .on('mouseout', function (d, i) {
-          if (vm._config.mouseout) {
-            vm._config.mouseout.call(this, d, i);
+          if (vm._config.events.mouseout) {
+            vm._config.events.mouseout.call(this, d, i);
           }
           vm._tip.hide(d, d3.select(this).node());
         })
@@ -334,14 +334,14 @@ export default function (config, helper) {
         })
         .style('opacity', vm._config.opacity !== undefined ? vm._config.opacity : 1)
         .on('mouseover', function (d, i) {
-          if (vm._config.mouseover) {
-            vm._config.mouseover.call(vm, d, i);
+          if (vm._config.events.mouseover) {
+            vm._config.events.mouseover.call(vm, d, i);
           }
           vm._tip.show(d, d3.select(this).node());
         })
         .on('mouseout', function (d, i) {
-          if (vm._config.mouseout) {
-            vm._config.mouseout.call(this, d, i);
+          if (vm._config.events.mouseout) {
+            vm._config.events.mouseout.call(this, d, i);
           }
           vm._tip.hide(d, d3.select(this).node());
         })
