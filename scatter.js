@@ -149,7 +149,7 @@ export default function (config, helper) {
 
   Scatter.data = function (data) {
     var vm = this;
-    var xr,yr, xMean, yMean, b1, b0;
+    var xr,yr, xMean, yMean, b1, b0, term1, term2;
     vm._data = [];
 
     
@@ -193,10 +193,8 @@ export default function (config, helper) {
       var b1 = term1 / term2;
       var b0 = yMean - (b1 * xMean);
 
-      yhat = [];
-
       vm._data.forEach(function(m){
-        m.yhat = b0 + (x[i] * b1);
+        m.yhat = b0 + (m.x * b1);
       })
     }
 
@@ -400,9 +398,10 @@ export default function (config, helper) {
         });
 
         vm.chart.svg().append("path")
-          .datum(data)
+          .datum(vm._data)
           .attr("class", "line")
-          .attr("d", line);
+          .attr("d", line)
+          .style("stroke","rgb(251, 196, 58)")
       }
     }
     return vm;
