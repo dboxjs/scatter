@@ -410,8 +410,7 @@ export default function (config, helper) {
   Scatter.select = function (id) {
     var vm = this;
     console.log('this scatter', id, 'is selected');
-    //vm.chart.svg().select('circle.scatter-' + id);
-    return vm;
+    return vm.chart.svg().select('circle.scatter-' + id);
   };
 
   Scatter.selectAll = function (id) {
