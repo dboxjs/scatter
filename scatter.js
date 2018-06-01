@@ -38,9 +38,9 @@ export default function (config, helper) {
         if (vm._config.magnitude && d.magnitude !== d.x && d.magnitude !== d.y) {
           html += d.magnitude ? (`<span>` + (Number.isNaN(+d.magnitude) ? d.magnitude : vm.utils.format(d.magnitude)) + '</span>') : '';
         }
-        /*if (d.color !== d.x && d.color !== d.y) {
+        if (d.color !== d.x && d.color !== d.y && d.color !== d.magnitude) {
           html += d.color ? ('<span> ' + (Number.isNaN(+d.color) ? d.color : vm.utils.format(d.color)) + '</span>') : '';
-        }*/
+        }
         html += '</div>';
 
         return html;
@@ -160,9 +160,9 @@ export default function (config, helper) {
       m.x = vm._config.xAxis.scale == 'linear' ? +d[vm._config.x] : d[vm._config.x];
       m.y = vm._config.yAxis.scale == 'linear' ? +d[vm._config.y] : d[vm._config.y];
       m.color = vm._config.fill.slice(0, 1) !== '#' ? d[vm._config.fill] : vm._config.fill;
-      m.radius = vm._config.radius !== undefined ? isNaN(vm._config.radius) ? +d[vm._config.radius] : vm._config.radius : 5;
+      m.radius = vm._config.radius !== undefined ? isNaN(vm._config.radius) ? +d[vm._config.radius] : vm._config.radius : 7;
       
-      m.magnitude = vm._config.magnitude !== undefined ? isNaN(vm._config.magnitude) ? +d[vm._config.magnitude] : vm._config.magnitude : 5;
+      m.magnitude = vm._config.magnitude !== undefined ? isNaN(vm._config.magnitude) ? +d[vm._config.magnitude] : vm._config.magnitude : 7;
 
       if (vm._config.properties !== undefined && Array.isArray(vm._config.properties) && vm._config.properties.length > 0) {
         vm._config.properties.forEach(function (p) {
@@ -195,7 +195,7 @@ export default function (config, helper) {
 
       vm._data.forEach(function(m){
         m.yhat = b0 + (m.x * b1);
-      })
+      });
     }
 
     if (vm._config.yAxis.scale !== 'linear') {
@@ -250,11 +250,11 @@ export default function (config, helper) {
     var arrOk = [0, 0];
 
     vm._scales.radius = d3.scaleLinear()
-      .range(vm._config.radiusRange != undefined ? vm._config.radiusRange : [5, 15])
+      .range(vm._config.radiusRange != undefined ? vm._config.radiusRange : [7, 20])
       .domain(radiusMinMax).nice();
 
     vm._scales.magnitude = d3.scaleLinear()
-      .range(vm._config.magnitudeRange != undefined ? vm._config.magnitudeRange : [5, 20])
+      .range(vm._config.magnitudeRange != undefined ? vm._config.magnitudeRange : [7, 20])
       .domain(magnitudeMinMax).nice();
 
     if (vm._config.xAxis.scaleDomain && Array.isArray(vm._config.xAxis.scaleDomain)) {
