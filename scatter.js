@@ -159,6 +159,12 @@ export default function (config, helper) {
       m.datum = d;
       m.x = vm._config.xAxis.scale == 'linear' ? +d[vm._config.x] : d[vm._config.x];
       m.y = vm._config.yAxis.scale == 'linear' ? +d[vm._config.y] : d[vm._config.y];
+      if (Number.isNaN(m.x)) {
+        m.x = 0;
+      }
+      if (Number.isNaN(m.y)) {
+        m.y = 0;
+      }
       m.color = vm._config.fill.slice(0, 1) !== '#' ? d[vm._config.fill] : vm._config.fill;
       m.radius = vm._config.radius !== undefined ? isNaN(vm._config.radius) ? +d[vm._config.radius] : vm._config.radius : 7;
       
@@ -172,20 +178,24 @@ export default function (config, helper) {
 
       vm._data.push(m);
     });
-
+    
     if (vm._config.regression === true 
       && vm._config.yAxis.scale === 'linear' 
       && vm._config.xAxis.scale === 'linear' ) {
-      xMean = d3.mean(data.map(function(d){ return +d[vm._config.x]; }));
-      yMean = d3.mean(data.map(function(d){ return +d[vm._config.y]; }));
+      xMean = d3.mean(data.map(function (d) {
+        return !Number.isNaN(+d[vm._config.x]) ? + d[vm._config.x] : 0;
+      }));
+      yMean = d3.mean(data.map(function (d) {
+        return !Number.isNaN(+d[vm._config.y]) ? + d[vm._config.y] : 0;
+      }));
       xr = 0;
       yr = 0;
       term1 = 0;
       term2 = 0;
 
       vm._data.forEach(function(m){
-        xr = m.x - xMean;
-        yr = m.y - yMean;
+        xr = Number.isNaN(+m.x) ? -xMean : (+m.x) - xMean;
+        yr = Number.isNaN(+m.y) ? -yMean : (+m.y) - yMean;
         term1 += xr * yr;
         term2 += xr * xr;
       });
@@ -194,7 +204,7 @@ export default function (config, helper) {
       var b0 = yMean - (b1 * xMean);
 
       vm._data.forEach(function(m){
-        m.yhat = b0 + (m.x * b1);
+        m.yhat = b0 + (Number(m.x) * b1);
       });
     }
 
@@ -220,7 +230,7 @@ export default function (config, helper) {
         column: 'x',
         type: vm._config.xAxis.scale,
         range: [0, vm.chart.width],
-        minZero: false
+        minZero: (vm._config.xAxis.minZero || false)
       };
       vm._scales.x = vm.utils.generateScale(vm._data, config);
 
@@ -229,7 +239,7 @@ export default function (config, helper) {
         column: 'y',
         type: vm._config.yAxis.scale,
         range: [vm.chart.height, 0],
-        minZero: false
+        minZero: vm._config.yAxis.minZero || false
       };
       vm._scales.y = vm.utils.generateScale(vm._data, config);
     }
@@ -387,22 +397,22 @@ export default function (config, helper) {
             vm._config.events.onClickElement.call(this, d, i);
           }
         });
-
-      if (vm._config.regression === true){
-        var line = d3.line()
-        .x(function(d) {
-            return vm._scales.x(d.x);
+    }
+    
+    if (vm._config.regression === true) {
+      var line = d3.line()
+        .x(function (d) {
+          return vm._scales.x(d.x);
         })
-        .y(function(d) {
-            return vm._scales.y(d.yhat);
+        .y(function (d) {
+          return vm._scales.y(d.yhat);
         });
 
-        vm.chart.svg().append("path")
-          .datum(vm._data)
-          .attr("class", "line")
-          .attr("d", line)
-          .style("stroke","rgb(251, 196, 58)")
-      }
+      vm.chart.svg().append('path')
+        .datum(vm._data)
+        .attr('class', 'line')
+        .attr('d', line)
+        .style('stroke', 'rgb(251, 196, 58)');
     }
     return vm;
   };
