@@ -220,7 +220,7 @@ export default function (config, helper) {
         column: 'x',
         type: vm._config.xAxis.scale,
         range: [0, vm.chart.width],
-        minZero: false
+        minZero: vm._config.xAxis.minZero ? vm._config.xAxis.minZero : false
       };
       vm._scales.x = vm.utils.generateScale(vm._data, config);
 
@@ -229,7 +229,7 @@ export default function (config, helper) {
         column: 'y',
         type: vm._config.yAxis.scale,
         range: [vm.chart.height, 0],
-        minZero: false
+        minZero: vm._config.yAxis.minZero ? vm._config.yAxis.minZero : false
       };
       vm._scales.y = vm.utils.generateScale(vm._data, config);
     }
