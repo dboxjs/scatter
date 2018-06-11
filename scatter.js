@@ -159,10 +159,12 @@ export default function (config, helper) {
       m.datum = d;
       m.x = vm._config.xAxis.scale == 'linear' ? +d[vm._config.x] : d[vm._config.x];
       m.y = vm._config.yAxis.scale == 'linear' ? +d[vm._config.y] : d[vm._config.y];
-      if (Number.isNaN(m.x)) {
+      if (vm._config.xAxis.scale == 'linear'
+         && Number.isNaN(m.x)) {
         m.x = 0;
       }
-      if (Number.isNaN(m.y)) {
+      if (vm._config.yAxis.scale == 'linear'
+         && Number.isNaN(m.y)) {
         m.y = 0;
       }
       m.color = vm._config.fill.slice(0, 1) !== '#' ? d[vm._config.fill] : vm._config.fill;
@@ -398,7 +400,7 @@ export default function (config, helper) {
           }
         });
     }
-    
+
     if (vm._config.regression === true) {
       var line = d3.line()
         .x(function (d) {
