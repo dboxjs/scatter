@@ -259,8 +259,6 @@ export default function (config, helper) {
       return d.magnitude;
     });
 
-    var arrOk = [0, 0];
-
     vm._scales.radius = d3.scaleLinear()
       .range(vm._config.radiusRange != undefined ? vm._config.radiusRange : [7, 20])
       .domain(radiusMinMax).nice();
