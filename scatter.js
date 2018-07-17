@@ -32,14 +32,14 @@ export default function (config, helper) {
         }
         else { var html = "<div> <strong>" }
         html += vm._config.idName ? d.datum[vm._config.idName] ? d.datum[vm._config.idName] + '<br>' : '' : '';
-        html += d.x ? ('<span>(' + (Number.isNaN(+d.x) || vm._config.xAxis.scale !== 'linear' ? d.x : vm.utils.format(d.x)) + '</span>') : '';
-        html += d.y ? ('<span>, &nbsp;' + (Number.isNaN(+d.y) || vm._config.yAxis.scale !== 'linear' ? d.y : vm.utils.format(d.y)) + ')</span>') : '';
+        html += d.x ? ('<span>(' + (Number.isNaN(+d.x) || vm._config.xAxis.scale !== 'linear' ? d.x : vm.utils.format(d.x)) + '</span>') : '(NA';
+        html += d.y ? ('<span>, &nbsp;' + (Number.isNaN(+d.y) || vm._config.yAxis.scale !== 'linear' ? d.y : vm.utils.format(d.y)) + ')</span>') : '(NA';
         html += ' </strong><br>';
         if (vm._config.magnitude && d.magnitude !== d.x && d.magnitude !== d.y) {
-          html += d.magnitude ? (`<span>` + (Number.isNaN(+d.magnitude) ? d.magnitude : vm.utils.format(d.magnitude)) + '</span>') : '';
+          html += d.magnitude ? (`<span>` + (Number.isNaN(+d.magnitude) || (+d.magnitude >= 1993 && +d.magnitude <= 2019)? d.magnitude : vm.utils.format(d.magnitude)) + '</span>') : '';
         }
         if (d.color !== d.x && d.color !== d.y && d.color !== d.magnitude) {
-          html += d.color ? ('<span> ' + (Number.isNaN(+d.color) ? d.color : vm.utils.format(d.color)) + '</span>') : '';
+          html += d.color ? ('<span> ' + (Number.isNaN(+d.color) || (+d.color >= 1993 && +d.color <= 2019) ? d.color : vm.utils.format(d.color)) + '</span>') : '';
         }
         html += '</div>';
 
