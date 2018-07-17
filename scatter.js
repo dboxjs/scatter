@@ -245,11 +245,12 @@ export default function (config, helper) {
       };
       vm._scales.y = vm.utils.generateScale(vm._data, config);
     }
-
-    if (vm._config.hasOwnProperty('colors'))
+    
+    if (vm._config.hasOwnProperty('colors')) {
       vm._scales.color = d3.scaleOrdinal(vm._config.colors);
-    else
+    } else {
       vm._scales.color = d3.scaleOrdinal(d3.schemeCategory20c);
+    }
 
     var radiusMinMax = d3.extent(vm._data, function (d) {
       return d.radius;
