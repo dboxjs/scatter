@@ -152,8 +152,6 @@ export default function (config, helper) {
     var xr,yr, xMean, yMean, b1, b0, term1, term2;
     vm._data = [];
 
-    
-
     data.forEach(function (d) {
       var m = {};
       m.datum = d;
@@ -169,6 +167,8 @@ export default function (config, helper) {
       }
       m.color = vm._config.fill.slice(0, 1) !== '#' ? d[vm._config.fill] : vm._config.fill;
       m.radius = vm._config.radius !== undefined ? isNaN(vm._config.radius) ? +d[vm._config.radius] : vm._config.radius : 7;
+
+      //vm._config.magnitude = 'FACTOR_HOG'; For testing
       
       m.magnitude = vm._config.magnitude !== undefined ? isNaN(vm._config.magnitude) ? +d[vm._config.magnitude] : vm._config.magnitude : 7;
 
@@ -277,6 +277,78 @@ export default function (config, helper) {
     }
     return vm;
   };
+
+  Scatter.drawLabels = function() {
+    var vm = this;
+
+    vm.chart.svg().selectAll('.dbox-label')        
+      .data(vm._data)
+      .enter().append('text')
+      .attr('class', 'dbox-label')
+      .attr('transform', function(d, index) {
+        var xCoord;
+        if (vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band') {
+          xCoord =  vm._scales.x(d.x) + vm._scales.x.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
+        }
+        else {
+          xCoord = vm._scales.x(d.x);
+        }
+        var yCoord;
+        if (vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band') {
+          yCoord = vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
+          yCoord = index%2 === 0 ? yCoord + 15 : yCoord;
+        }
+        else {
+          yCoord = vm._scales.y(d.y);
+          yCoord = index%2 === 0 ? yCoord + 15 : yCoord;
+        }
+        return 'translate(' + (xCoord + 10) + ',' + (yCoord - 20) + ')';
+      })
+      .text(function(d) {
+        var allText = '';
+        allText += d.color ?  d.color : '(-)';
+        allText += ' : ';
+        allText += d.datum[vm._config.magnitude] ? vm.utils.format(d.datum[vm._config.magnitude]) : '(-)'
+        return allText;
+      });
+
+      vm.chart.svg().selectAll('.dbox-label-coefficient')        
+        .data(vm._data)
+        .enter().append('text')
+        .attr('class', 'dbox-label-coefficient')
+        .attr('transform', function(d, index) {
+          var xCoord;
+          if (vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band') {
+            xCoord =  vm._scales.x(d.x) + vm._scales.x.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
+          }
+          else {
+            xCoord = vm._scales.x(d.x);
+          }
+          var yCoord;
+          if (vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band') {
+            yCoord = vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
+            yCoord = index%2 === 0 ? yCoord + 15 : yCoord;
+          }
+          else {
+            yCoord = vm._scales.y(d.y);
+            yCoord = index%2 === 0 ? yCoord + 15 : yCoord;
+          }
+          return 'translate(' + (xCoord + 10) + ',' + (yCoord + 15) + ')';
+        })
+        .text(function(d) {
+          var allText = '';
+          allText += d.color ?  d.color : '(-)';
+          allText += ' : ';
+          allText += d.datum[d.color + 'coefficient']!== undefined ? d.datum[d.color + 'coefficient'].toFixed(1) : '(-)'
+          return allText;
+        });
+      /*vm.chart.svg().selectAll('rect').each(function(dat, index) {
+        if (index%2 === 0) {
+          vm.chart.svg().append('text')
+            .attr('class', 'dbox-label')
+        }
+      })*/
+  }
 
   Scatter.draw = function () {
     var vm = this;
@@ -415,6 +487,9 @@ export default function (config, helper) {
         .attr('d', line)
         .style('stroke', 'rgb(251, 196, 58)');
     }
+
+    Scatter.drawLabels();
+
     return vm;
   };
 
