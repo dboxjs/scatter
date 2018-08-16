@@ -282,6 +282,7 @@ export default function (config, helper) {
     var vm = this;
     var yCoords = [];
     var xCoords = [];
+    var repeat = [];
 
     vm.chart.svg().selectAll('.dbox-label')        
       .data(vm._data)
@@ -297,17 +298,49 @@ export default function (config, helper) {
         xCoords.push(d.datum[vm._config.x]);
 
         var yCoord;
+        var space = 15;
         if (vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band') {
           yCoord = vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
-          yCoord = yCoords.indexOf(Math.ceil(yCoord)) !== -1 ? yCoord + 15 : yCoord;
+          if (yCoords.indexOf(Math.ceil(yCoord)) !== -1) {
+            repeat.push(Math.ceil(yCoord));
+            var current = null;
+            var cnt = 0;
+            for (var i = 0; i < repeat.length; i++) {
+              if (repeat[i] != current) {
+                current = repeat[i];
+                cnt = 1;
+              } else {
+                cnt++;
+              }
+
+              space = space * cnt;
+            }
+            yCoord = yCoord + space;
+          }
         } else {
           yCoord = vm._scales.y(d.y);
-          yCoord = yCoords.indexOf(Math.ceil(yCoord)) !== -1 ? yCoord + 15 : yCoord;
+          if (yCoords.indexOf(Math.ceil(yCoord)) !== -1) {
+            repeat.push(Math.ceil(yCoord));
+            var current = null;
+            var cnt = 0;
+            for (var i = 0; i < repeat.length; i++) {
+              if (repeat[i] != current) {
+                current = repeat[i];
+                cnt = 1;
+              } else {
+                cnt++;
+              }
+
+              space = space * cnt;
+            }
+            yCoord = yCoord + space;
+          }
         }
         yCoords.push(Math.ceil(yCoord));
 
         if (xCoords[index - 1] !== d.datum[vm._config.x]) {
           yCoords = [];
+          repeat = [];
         }
 
         return 'translate(' + (xCoord + 10) + ',' + (yCoord - 20) + ')';
