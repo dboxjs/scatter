@@ -280,6 +280,8 @@ export default function (config, helper) {
 
   Scatter.drawLabels = function() {
     var vm = this;
+    var yCoords = [];
+    var xCoords = [];
 
     vm.chart.svg().selectAll('.dbox-label')        
       .data(vm._data)
@@ -289,19 +291,25 @@ export default function (config, helper) {
         var xCoord;
         if (vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band') {
           xCoord =  vm._scales.x(d.x) + vm._scales.x.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
-        }
-        else {
+        } else {
           xCoord = vm._scales.x(d.x);
         }
+        xCoords.push(d.datum[vm._config.x]);
+
         var yCoord;
         if (vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band') {
           yCoord = vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
-          yCoord = index%2 === 0 ? yCoord + 15 : yCoord;
-        }
-        else {
+          yCoord = yCoords.indexOf(Math.ceil(yCoord)) !== -1 ? yCoord + 15 : yCoord;
+        } else {
           yCoord = vm._scales.y(d.y);
-          yCoord = index%2 === 0 ? yCoord + 15 : yCoord;
+          yCoord = yCoords.indexOf(Math.ceil(yCoord)) !== -1 ? yCoord + 15 : yCoord;
         }
+        yCoords.push(Math.ceil(yCoord));
+
+        if (xCoords[index - 1] !== d.datum[vm._config.x]) {
+          yCoords = [];
+        }
+
         return 'translate(' + (xCoord + 10) + ',' + (yCoord - 20) + ')';
       })
       .text(function(d) {
