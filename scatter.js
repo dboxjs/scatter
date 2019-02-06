@@ -345,13 +345,13 @@ export default function (config, helper) {
 
         return 'translate(' + (xCoord + 10) + ',' + (yCoord - 20) + ')';
       })
-      .text(function(d) {
-        var allText = '';
-        allText += d.color ?  d.color : '(-)';
-        allText += ' : ';
-        allText += d.datum[vm._config.magnitude] ? vm.utils.format(d.datum[vm._config.magnitude], true, vm._config.decimals) : '(-)';
-        return allText;
-      });
+      // .text(function(d) {
+      //   var allText = '';
+      //   allText += d.color ?  d.color : '(-)';
+      //   allText += ' : ';
+      //   allText += d.datum[vm._config.magnitude] ? vm.utils.format(d.datum[vm._config.magnitude], true, vm._config.decimals) : '(-)';
+      //   return allText;
+      // });
 
     vm.chart.svg().selectAll('.dbox-label-coefficient')
       .data(vm._data)
@@ -376,13 +376,13 @@ export default function (config, helper) {
         }
         return 'translate(' + (xCoord + 10) + ',' + (yCoord + 15) + ')';
       })
-      .text(function(d) {
-        var allText = '';
-        allText += d.color ?  d.color : '(-)';
-        allText += ' : ';
-        allText += d.datum[d.color + 'coefficient']!== undefined ? d.datum[d.color + 'coefficient'].toFixed(1) : '(-)';
-        return allText;
-      });
+      // .text(function(d) {
+      //   var allText = '';
+      //   allText += d.color ?  d.color : '(-)';
+      //   allText += ' : ';
+      //   allText += d.datum[d.color + 'coefficient']!== undefined ? d.datum[d.color + 'coefficient'].toFixed(1) : '(-)';
+      //   return allText;
+      // });
       
     /*vm.chart.svg().selectAll('rect').each(function(dat, index) {
         if (index%2 === 0) {
