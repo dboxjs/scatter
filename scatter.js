@@ -347,9 +347,9 @@ export default function (config, helper) {
       })
       .text(function(d) {
         var allText = '';
-        allText += d.color ?  d.color : '(-)';
-        allText += ' : ';
-        allText += d.datum[vm._config.magnitude] ? vm.utils.format(d.datum[vm._config.magnitude], true, vm._config.decimals) : '(-)';
+        allText += d.color ?  d.color : '';
+        allText += ' ';
+        allText += d.datum[vm._config.magnitude] ? vm.utils.format(d.datum[vm._config.magnitude], true, vm._config.decimals) : '';
         return allText;
       });
 
