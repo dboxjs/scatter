@@ -13,11 +13,12 @@ export default function (config, helper) {
     vm._data = [];
     vm._scales = {};
     vm._axes = {};
-    
+
     vm._tip = this.utils.d3.tip().attr('class', 'd3-tip')
-      .html(vm._config.tip && vm._config.tip.html ? vm._config.tip.html : function(d) {
+      .html(vm._config.tip && vm._config.tip.html ? vm._config.tip.html : function (d) {
+        var html;
         if (vm.chart.config.styles) {
-          var html = `<div style='
+          html = `<div style='
             line-height: 1; 
             opacity: ${vm.chart.style.tooltip.opacity}; 
             font-weight: ${vm.chart.style.tooltip.text.fontWeight}; 
@@ -29,17 +30,18 @@ export default function (config, helper) {
             border: ${vm.chart.style.tooltip.border.width} solid ${vm.chart.style.tooltip.border.color};  
             border-radius:  ${vm.chart.style.tooltip.border.radius};'>`;
           html += `<strong style='color:${vm.chart.style.tooltip.text.fontColor};'>`;
+        } else {
+          html = '<div> <strong>';
         }
-        else { var html = "<div> <strong>" }
         html += vm._config.idName ? d.datum[vm._config.idName] ? d.datum[vm._config.idName] + '<br>' : '' : '';
-        html += d.x ? ('<span>(' + (Number.isNaN(+d.x) || vm._config.xAxis.scale !== 'linear' ? d.x : vm.utils.format(d.x, false, vm._config.decimals)) + '</span>') : '(NA';
-        html += d.y ? ('<span>, &nbsp;' + (Number.isNaN(+d.y) || vm._config.yAxis.scale !== 'linear' ? d.y : vm.utils.format(d.y, false, vm._config.decimals)) + ')</span>') : ', NA)';
+        html += d.x ? ('<span>(' + (Number.isNaN(+d.x) || vm._config.xAxis.scale !== 'linear' ? d.x : vm.utils.format(vm._config.xAxis)(d.x)) + '</span>') : '(NA';
+        html += d.y ? ('<span>, &nbsp;' + (Number.isNaN(+d.y) || vm._config.yAxis.scale !== 'linear' ? d.y : vm.utils.format(vm._config.yAxis)(d.y)) + ')</span>') : ', NA)';
         html += ' </strong><br>';
         if (vm._config.magnitude && d.magnitude !== d.x && d.magnitude !== d.y) {
-          html += d.magnitude ? (`<span>` + (Number.isNaN(+d.magnitude) || (+d.magnitude >= 1993 && +d.magnitude <= 2019)? d.magnitude : vm.utils.format(d.magnitude)) + '</span>') : '';
+          html += d.magnitude ? ('<span>' + (Number.isNaN(+d.magnitude) || (+d.magnitude >= 1993 && +d.magnitude <= 2019) ? d.magnitude : vm.utils.format()(d.magnitude)) + '</span>') : '';
         }
         if (d.color !== d.x && d.color !== d.y && d.color !== d.magnitude) {
-          html += d.color ? ('<span> ' + (Number.isNaN(+d.color) || (+d.color >= 1993 && +d.color <= 2019) ? d.color : vm.utils.format(d.color, false, vm._config.decimals)) + '</span>') : '';
+          html += d.color ? ('<span> ' + (Number.isNaN(+d.color) || (+d.color >= 1993 && +d.color <= 2019) ? d.color : vm.utils.format()(d.color)) + '</span>') : '';
         }
         html += '</div>';
 
@@ -110,7 +112,7 @@ export default function (config, helper) {
     return vm;
   };
 
-  Scatter.colors = function(colors) {
+  Scatter.colors = function (colors) {
     var vm = this;
     if (Array.isArray(colors)) {
       //Using an array of colors for the range 
@@ -149,7 +151,7 @@ export default function (config, helper) {
 
   Scatter.data = function (data) {
     var vm = this;
-    var xr,yr, xMean, yMean, b1, b0, term1, term2;
+    var xr, yr, xMean, yMean, b1, b0, term1, term2;
     vm._data = [];
 
     data.forEach(function (d) {
@@ -158,18 +160,18 @@ export default function (config, helper) {
       m.x = vm._config.xAxis.scale == 'linear' ? +d[vm._config.x] : d[vm._config.x];
       m.y = vm._config.yAxis.scale == 'linear' ? +d[vm._config.y] : d[vm._config.y];
       if (vm._config.xAxis.scale == 'linear'
-         && Number.isNaN(m.x)) {
+        && Number.isNaN(m.x)) {
         m.x = 0;
       }
       if (vm._config.yAxis.scale == 'linear'
-         && Number.isNaN(m.y)) {
+        && Number.isNaN(m.y)) {
         m.y = 0;
       }
       m.color = vm._config.fill.slice(0, 1) !== '#' ? d[vm._config.fill] : vm._config.fill;
       m.radius = vm._config.radius !== undefined ? isNaN(vm._config.radius) ? +d[vm._config.radius] : vm._config.radius : 7;
 
       //vm._config.magnitude = 'FACTOR_HOG'; For testing
-      
+
       m.magnitude = vm._config.magnitude !== undefined ? isNaN(vm._config.magnitude) ? +d[vm._config.magnitude] : vm._config.magnitude : 7;
 
       if (vm._config.properties !== undefined && Array.isArray(vm._config.properties) && vm._config.properties.length > 0) {
@@ -180,10 +182,10 @@ export default function (config, helper) {
 
       vm._data.push(m);
     });
-    
-    if (vm._config.regression === true 
-      && vm._config.yAxis.scale === 'linear' 
-      && vm._config.xAxis.scale === 'linear' ) {
+
+    if (vm._config.regression === true
+      && vm._config.yAxis.scale === 'linear'
+      && vm._config.xAxis.scale === 'linear') {
       xMean = d3.mean(data.map(function (d) {
         return !Number.isNaN(+d[vm._config.x]) ? + d[vm._config.x] : 0;
       }));
@@ -195,32 +197,32 @@ export default function (config, helper) {
       term1 = 0;
       term2 = 0;
 
-      vm._data.forEach(function(m){
+      vm._data.forEach(function (m) {
         xr = Number.isNaN(+m.x) ? -xMean : (+m.x) - xMean;
         yr = Number.isNaN(+m.y) ? -yMean : (+m.y) - yMean;
         term1 += xr * yr;
         term2 += xr * xr;
       });
 
-      var b1 = term1 / term2;
-      var b0 = yMean - (b1 * xMean);
+      b1 = term1 / term2;
+      b0 = yMean - (b1 * xMean);
 
-      vm._data.forEach(function(m){
+      vm._data.forEach(function (m) {
         m.yhat = b0 + (Number(m.x) * b1);
       });
     }
 
     if (vm._config.yAxis.scale !== 'linear') {
-      vm._data.sort(function(a, b) {
+      vm._data.sort(function (a, b) {
         return vm.utils.sortAscending(a.y, b.y);
       });
     }
     if (vm._config.xAxis.scale !== 'linear') {
-      vm._data.sort(function(a, b) {
+      vm._data.sort(function (a, b) {
         return vm.utils.sortAscending(a.x, b.x);
       });
-    }    
-    
+    }
+
     return vm;
   };
 
@@ -245,7 +247,7 @@ export default function (config, helper) {
       };
       vm._scales.y = vm.utils.generateScale(vm._data, config);
     }
-    
+
     if (vm._config.hasOwnProperty('colors')) {
       vm._scales.color = d3.scaleOrdinal(vm._config.colors);
     } else {
@@ -278,20 +280,20 @@ export default function (config, helper) {
     return vm;
   };
 
-  Scatter.drawLabels = function() {
+  Scatter.drawLabels = function () {
     var vm = this;
     var yCoords = [];
     var xCoords = [];
     var repeat = [];
 
-    vm.chart.svg().selectAll('.dbox-label')        
+    vm.chart.svg().selectAll('.dbox-label')
       .data(vm._data)
       .enter().append('text')
       .attr('class', 'dbox-label')
-      .attr('transform', function(d, index) {
+      .attr('transform', function (d, index) {
         var xCoord;
         if (vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band') {
-          xCoord =  vm._scales.x(d.x) + vm._scales.x.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
+          xCoord = vm._scales.x(d.x) + vm._scales.x.bandwidth() / 2 - vm._scales.magnitude(d.magnitude) / 2;
         } else {
           xCoord = vm._scales.x(d.x);
         }
@@ -300,12 +302,12 @@ export default function (config, helper) {
         var yCoord;
         var space = 15;
         if (vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band') {
-          yCoord = vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
+          yCoord = vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2 - vm._scales.magnitude(d.magnitude) / 2;
           if (yCoords.indexOf(Math.ceil(yCoord)) !== -1) {
             repeat.push(Math.ceil(yCoord));
-            var current = null;
-            var cnt = 0;
-            for (var i = 0; i < repeat.length; i++) {
+            let current = null;
+            let cnt = 0;
+            for (let i = 0; i < repeat.length; i++) {
               if (repeat[i] != current) {
                 current = repeat[i];
                 cnt = 1;
@@ -321,9 +323,9 @@ export default function (config, helper) {
           yCoord = vm._scales.y(d.y);
           if (yCoords.indexOf(Math.ceil(yCoord)) !== -1) {
             repeat.push(Math.ceil(yCoord));
-            var current = null;
-            var cnt = 0;
-            for (var i = 0; i < repeat.length; i++) {
+            let current = null;
+            let cnt = 0;
+            for (let i = 0; i < repeat.length; i++) {
               if (repeat[i] != current) {
                 current = repeat[i];
                 cnt = 1;
@@ -345,60 +347,22 @@ export default function (config, helper) {
 
         return 'translate(' + (xCoord + 10) + ',' + (yCoord - 20) + ')';
       })
-      .text(function(d) {
+      .text(function (d) {
         var allText = '';
-        allText += d.color ?  d.color : '';
+        allText += d.color ? d.color : '';
         allText += ' ';
-        allText += d.datum[vm._config.magnitude] ? vm.utils.format(d.datum[vm._config.magnitude], true, vm._config.decimals) : '';
+        allText += d.datum[vm._config.magnitude] ? vm.utils.format(null, true)(d.datum[vm._config.magnitude]) : '';
         return allText;
       });
-
-    // vm.chart.svg().selectAll('.dbox-label-coefficient')
-    //   .data(vm._data)
-    //   .enter().append('text')
-    //   .attr('class', 'dbox-label-coefficient')
-    //   .attr('transform', function(d, index) {
-    //     var xCoord;
-    //     if (vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band') {
-    //       xCoord =  vm._scales.x(d.x) + vm._scales.x.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
-    //     }
-    //     else {
-    //       xCoord = vm._scales.x(d.x);
-    //     }
-    //     var yCoord;
-    //     if (vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band') {
-    //       yCoord = vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
-    //       yCoord = index%2 === 0 ? yCoord + 15 : yCoord;
-    //     }
-    //     else {
-    //       yCoord = vm._scales.y(d.y);
-    //       yCoord = index%2 === 0 ? yCoord + 15 : yCoord;
-    //     }
-    //     return 'translate(' + (xCoord + 10) + ',' + (yCoord + 15) + ')';
-    //   })
-    //  .text(function(d) {
-    //    var allText = '';
-    //    allText += d.color ?  d.color : '(-)';
-    //    allText += ' : ';
-    //    allText += d.datum[d.color + 'coefficient']!== undefined ? d.datum[d.color + 'coefficient'].toFixed(1) : '(-)';
-    //    return allText;
-    //  });
-      
-    /*vm.chart.svg().selectAll('rect').each(function(dat, index) {
-        if (index%2 === 0) {
-          vm.chart.svg().append('text')
-            .attr('class', 'dbox-label')
-        }
-      })*/
   };
 
   Scatter.draw = function () {
     var vm = this;
-    //Call the tip
+    // Call the tip
     vm.chart.svg().call(vm._tip);
 
     // Squares 
-    if ( vm._config.figureType === 'square' ) {
+    if (vm._config.figureType === 'square') {
       vm.chart.svg().selectAll('square')
         .data(vm._data)
         .enter().append('rect')
@@ -417,7 +381,7 @@ export default function (config, helper) {
         })
         .attr('x', function (d) {
           if (vm._config.xAxis.scale == 'ordinal' || vm._config.xAxis.scale == 'band') {
-            return vm._scales.x(d.x) + vm._scales.x.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
+            return vm._scales.x(d.x) + vm._scales.x.bandwidth() / 2 - vm._scales.magnitude(d.magnitude) / 2;
           }
           else {
             return vm._scales.x(d.x);
@@ -425,7 +389,7 @@ export default function (config, helper) {
         })
         .attr('y', function (d) {
           if (vm._config.yAxis.scale == 'ordinal' || vm._config.yAxis.scale == 'band') {
-            return vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2 - vm._scales.magnitude(d.magnitude)/2;
+            return vm._scales.y(d.y) + vm._scales.y.bandwidth() / 2 - vm._scales.magnitude(d.magnitude) / 2;
           }
           else {
             return vm._scales.y(d.y);
@@ -540,7 +504,7 @@ export default function (config, helper) {
     return vm.chart.svg().select('circle.scatter-' + id);
   };
 
-  Scatter.selectAll = function (id) {
+  Scatter.selectAll = function () {
     var vm = this;
     return vm.chart.svg().selectAll('circle');
   };
