@@ -14,7 +14,14 @@ export default function (config, helper) {
     vm._scales = {};
     vm._axes = {};
 
-    vm._tip = this.utils.d3.tip().attr('class', 'd3-tip')
+    vm._tip = this.utils.d3.tip()
+      .attr(
+        'class', 
+        'd3-tip ' + 
+          (vm._config.tooltip && vm._config.tooltip.classed
+            ? vm._config.tooltip.classed
+            : '')
+      )
       .html(vm._config.tip && vm._config.tip.html ? vm._config.tip.html : function (d) {
         var html;
         if (vm.chart.config.styles) {
