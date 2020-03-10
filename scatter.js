@@ -13,82 +13,72 @@ export default function(config, helper) {
     vm._scales = {};
     vm._axes = {};
 
+    var defaultTip = function(d) {
+      var html;
+      if (vm.chart.config.styles) {
+        html = `<div style='
+        line-height: 1; 
+        opacity: ${vm.chart.style.tooltip.opacity}; 
+        font-weight: ${vm.chart.style.tooltip.text.fontWeight}; 
+        font-size: ${vm.chart.style.tooltip.text.fontSize}; 
+        color: ${vm.chart.style.tooltip.text.textColor};
+        font-family: ${vm.chart.style.tooltip.text.fontFamily};
+        background-color: ${vm.chart.style.tooltip.backgroundColor}; 
+        padding: ${vm.chart.style.tooltip.text.padding};   
+        border: ${vm.chart.style.tooltip.border.width} solid ${vm.chart.style.tooltip.border.color};  
+        border-radius:  ${vm.chart.style.tooltip.border.radius};'>`;
+        html += `<strong style='color:${vm.chart.style.tooltip.text.fontColor};'>`;
+      } else {
+        html = '<div> <strong>';
+      }
+      html += vm._config.idName
+        ? d.datum[vm._config.idName]
+          ? d.datum[vm._config.idName] + '<br>'
+          : ''
+        : '';
+      html += d.x
+        ? '<span>(' +
+          (Number.isNaN(+d.x) || vm._config.xAxis.scale !== 'linear'
+            ? d.x
+            : vm.utils.format(vm._config.xAxis)(d.x)) +
+          '</span>'
+        : '(NA';
+      html += d.y
+        ? '<span>, &nbsp;' +
+          (Number.isNaN(+d.y) || vm._config.yAxis.scale !== 'linear'
+            ? d.y
+            : vm.utils.format(vm._config.yAxis)(d.y)) +
+          ')</span>'
+        : ', NA)';
+      html += ' </strong><br>';
+      if (vm._config.magnitude && d.magnitude !== d.x && d.magnitude !== d.y) {
+        html += d.magnitude
+          ? '<span>' +
+            (Number.isNaN(+d.magnitude) ||
+            (+d.magnitude >= 1993 && +d.magnitude <= 2019)
+              ? d.magnitude
+              : vm.utils.format()(d.magnitude)) +
+            '</span>'
+          : '';
+      }
+      if (d.color !== d.x && d.color !== d.y && d.color !== d.magnitude) {
+        html += d.color
+          ? '<span> ' +
+            (Number.isNaN(+d.color) || (+d.color >= 1993 && +d.color <= 2019)
+              ? d.color
+              : vm.utils.format()(d.color)) +
+            '</span>'
+          : '';
+      }
+      html += '</div>';
+      return html;
+    };
+
     vm._tip = this.utils.d3
       .tip()
       .attr('class', 'd3-tip')
       .html(
-        vm._config.tip && vm._config.tip.html
-          ? vm._config.tip.html
-          : function(d) {
-            var html;
-            if (vm.chart.config.styles) {
-              html = `<div style='
-            line-height: 1; 
-            opacity: ${vm.chart.style.tooltip.opacity}; 
-            font-weight: ${vm.chart.style.tooltip.text.fontWeight}; 
-            font-size: ${vm.chart.style.tooltip.text.fontSize}; 
-            color: ${vm.chart.style.tooltip.text.textColor};
-            font-family: ${vm.chart.style.tooltip.text.fontFamily};
-            background-color: ${vm.chart.style.tooltip.backgroundColor}; 
-            padding: ${vm.chart.style.tooltip.text.padding};   
-            border: ${vm.chart.style.tooltip.border.width} solid ${vm.chart.style.tooltip.border.color};  
-            border-radius:  ${vm.chart.style.tooltip.border.radius};'>`;
-              html += `<strong style='color:${vm.chart.style.tooltip.text.fontColor};'>`;
-            } else {
-              html = '<div> <strong>';
-            }
-            html += vm._config.idName
-              ? d.datum[vm._config.idName]
-                ? d.datum[vm._config.idName] + '<br>'
-                : ''
-              : '';
-            html += d.x
-              ? '<span>(' +
-                  (Number.isNaN(+d.x) || vm._config.xAxis.scale !== 'linear'
-                    ? d.x
-                    : vm.utils.format(vm._config.xAxis)(d.x)) +
-                  '</span>'
-              : '(NA';
-            html += d.y
-              ? '<span>, &nbsp;' +
-                  (Number.isNaN(+d.y) || vm._config.yAxis.scale !== 'linear'
-                    ? d.y
-                    : vm.utils.format(vm._config.yAxis)(d.y)) +
-                  ')</span>'
-              : ', NA)';
-            html += ' </strong><br>';
-            if (
-              vm._config.magnitude &&
-                d.magnitude !== d.x &&
-                d.magnitude !== d.y
-            ) {
-              html += d.magnitude
-                ? '<span>' +
-                    (Number.isNaN(+d.magnitude) ||
-                    (+d.magnitude >= 1993 && +d.magnitude <= 2019)
-                      ? d.magnitude
-                      : vm.utils.format()(d.magnitude)) +
-                    '</span>'
-                : '';
-            }
-            if (
-              d.color !== d.x &&
-                d.color !== d.y &&
-                d.color !== d.magnitude
-            ) {
-              html += d.color
-                ? '<span> ' +
-                    (Number.isNaN(+d.color) ||
-                    (+d.color >= 1993 && +d.color <= 2019)
-                      ? d.color
-                      : vm.utils.format()(d.color)) +
-                    '</span>'
-                : '';
-            }
-            html += '</div>';
-
-            return html;
-          }
+        vm._config.tip && vm._config.tip.html ? vm._config.tip.html : defaultTip
       );
   };
 
